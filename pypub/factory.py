@@ -315,5 +315,4 @@ class SimpleChapterFactory(ChapterFactory):
         for elem in ctx.etree.getchildren():
             body.append(elem)
         # return html as string to be written
-        self.prettify(etree)
         return htmltostring(etree)
