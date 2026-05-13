@@ -314,7 +314,7 @@ class SimpleChapterFactory(ChapterFactory):
         body  = etree.xpath('.//body')[0]
         body.append(
             pyxml.html.fromstring(
-                f"<h2>{ctx.chapter.title}</h2>\n<p><br/></p>\n<hr/>"
+                f"<h2>{ctx.chapter.title_html}</h2>\n<p><br/></p>\n<hr/>"
             )
         )
         for elem in ctx.etree.getchildren():

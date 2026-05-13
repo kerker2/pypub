@@ -3,6 +3,7 @@ Chapter Assignment and Processing Factories
 """
 import html
 import os.path
+import re
 import urllib.request
 from io import BytesIO
 from dataclasses import dataclass
@@ -33,12 +34,13 @@ user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Ge
 @dataclass(repr=False)
 class Chapter:
     title:   str
+    title_html:   str
     content: bytes
     url:     Optional[str] = None
 
     def __repr__(self) -> str:
-        return 'Chapter(title=%r, url=%r, content=%d)' % (
-            self.title, self.url, len(self.content))
+        return 'Chapter(title=%r, title_html=%r, url=%r, content=%d)' % (
+            self.title, self.title_html, self.url, len(self.content))
 
 #** Functions **#
 
@@ -145,7 +147,9 @@ def create_chapter_from_html(
             root = elem[0]
         html = htmltostring(root)
     # generate chapter object
-    return Chapter(title, html, url)
+    title_html = title
+    title_txt = re.sub(r"<[^>]+>", "", title_html)
+    return Chapter(title_txt, title_html, html, url)
 
 def create_chapter_from_text(
     text:    str,
