@@ -31,9 +31,11 @@ __all__ = [
     'SimpleChapterFactory'
 ]
 
-#NOTE: monkey patch pyxml to not use &nbsp escape character in attributes
-from pyxml.escape import ESCAPE_ATTRIB
+#NOTE: monkey patch pyxml to not use &nbsp escape character in attributes,
+# and to decode &nbsp; as non-breaking space (U+00A0) rather than regular space
+from pyxml.escape import ESCAPE_ATTRIB, UNESCAPE_ATTRIB
 ESCAPE_ATTRIB.pop(' ', None)
+UNESCAPE_ATTRIB['&nbsp;'] = ' '
 
 #: unicode characters to replace if found in content
 REPLACE = dict([(ord(x), ord(y)) for x,y in zip(u"‘’´“”–-", u"'''\"\"--")])
