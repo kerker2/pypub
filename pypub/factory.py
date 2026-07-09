@@ -314,11 +314,12 @@ class SimpleChapterFactory(ChapterFactory):
         # attach elements from chapter etree to content etree
         etree = pyxml.html.fromstring(content.encode())
         body  = etree.xpath('.//body')[0]
-        body.append(
-            pyxml.html.fromstring(
-                f"<h2>{ctx.chapter.title_html}</h2>\n<p><br/></p>\n<hr/>"
+        if not ctx.render_kwargs.get('single_chapter'):
+            body.append(
+                pyxml.html.fromstring(
+                    f"<h2>{ctx.chapter.title_html}</h2>\n<p><br/></p>\n<hr/>"
+                )
             )
-        )
         for elem in ctx.etree.getchildren():
             body.append(elem)
         # return html as string to be written

@@ -231,7 +231,7 @@ class EpubBuilder:
             assign.play_order, chapter.title))
         # render chapter w/ appropriate kwargs
         args    = (self.logger, chapter, self.dirs.images, self.template)
-        kwargs  = {'epub': self.epub, 'chapter': chapter}
+        kwargs  = {'epub': self.epub, 'chapter': chapter, 'single_chapter': len(self.epub.chapters) == 1}
         fpath   = os.path.join(self.dirs.oebps, assign.link)
         content = self.factory.render(*args, kwargs,
             extern_links=self.epub.extern_links)
@@ -254,11 +254,13 @@ class EpubBuilder:
                 if fname != self.cover
             ]
         }
+        kwargs['single_chapter'] = len(self.chapters) == 1
         # render and write the rest of the templates
         self.logger.info('epub=%r, writing final templates' % self.epub.title)
         render_template('book.ncx.j2', self.dirs.oebps, self.encoding, kwargs)
         render_template('book.opf.j2', self.dirs.oebps, self.encoding, kwargs)
-        render_template('toc.xhtml.j2', self.dirs.oebps, self.encoding, kwargs)
+        if not kwargs['single_chapter']:
+            render_template('toc.xhtml.j2', self.dirs.oebps, self.encoding, kwargs)
 
     def compress(self, fpath: Optional[str] = None) -> str:
         """compress build and zip content into epub"""

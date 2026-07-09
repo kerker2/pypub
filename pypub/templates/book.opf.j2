@@ -15,7 +15,9 @@
   <manifest>
     <!-- static references -->
     <item href="book.ncx" id="ncx" media-type="application/x-dtbncx+xml"/>
+    {%- if not single_chapter %}
     <item href="toc.xhtml" id="toc" media-type="application/xhtml+xml"/>
+    {%- endif %}
     <item href="coverpage.xhtml" id="cover_page" media-type="application/xhtml+xml" />
     <!-- styles references -->
     {%- for css in styles %}
@@ -33,12 +35,16 @@
   </manifest>
   <spine toc="ncx">
     <itemref idref="cover_page"/>
+    {%- if not single_chapter %}
     <itemref idref="toc"/>
+    {%- endif %}
     {%- for (assign, _) in chapters %}
     <itemref idref="{{ assign.id }}"/>
     {%- endfor %}
   </spine>
+  {%- if not single_chapter %}
   <guide>
     <reference type="toc" title="Table of Contents" href="toc.xhtml"/>
   </guide>
+  {%- endif %}
 </package>
