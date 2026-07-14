@@ -28,7 +28,8 @@ __all__ = [
 
     'RenderCtx',
     'ChapterFactory',
-    'SimpleChapterFactory'
+    'SimpleChapterFactory',
+    'PassthroughChapterFactory',
 ]
 
 #NOTE: monkey patch pyxml to not use &nbsp escape character in attributes,
@@ -53,7 +54,7 @@ SUPPORTED_TAGS = {
     'dd':         ('id', 'title'),
     'del':        (),
     'dfn':        (),
-    'div':        ('align', 'id', 'bgcolor'),
+    'div':        ('align', 'class', 'id', 'bgcolor'),
     'em':         ('id', 'title'),
     'font':       ('color', 'face', 'id', 'size'),
     'head':       (),
@@ -324,3 +325,23 @@ class SimpleChapterFactory(ChapterFactory):
             body.append(elem)
         # return html as string to be written
         return htmltostring(etree)
+
+class PassthroughChapterFactory(SimpleChapterFactory):
+    """Chapter factory that preserves HTML as-is, skipping tag/attribute sanitization."""
+
+    def cleanup_html(self, content: bytes) -> HtmlElement:
+        etree = pyxml.html.fromstring(content)
+        body = etree.xpath('.//body')
+        body = body[0] if body else etree
+        # pyxml stores text before the first child element in body.text;
+        # finalize() only copies child elements, so wrap it in a <div> to preserve it.
+        if body.text and body.text.strip():
+            div = pyxml.html.Element('div')
+            div.text = body.text
+            body.text = None
+            body.insert(0, div)
+            # a <br/> immediately after bare text is redundant once wrapped in a block element
+            children = body.getchildren()
+            if len(children) > 1 and children[1].tag == 'br':
+                body.remove(children[1])
+        return body

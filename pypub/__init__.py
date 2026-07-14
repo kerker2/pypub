@@ -22,4 +22,4 @@ __all__ = [
 from .epub import Epub
 from .builder import Assignment, EpubBuilder
 from .chapter import *
-from .factory import ChapterFactory, SimpleChapterFactory
+from .factory import ChapterFactory, SimpleChapterFactory, PassthroughChapterFactory
